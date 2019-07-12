@@ -104,3 +104,6 @@ venv.bak/
 .mypy_cache/
 
 .vscode
+
+# Project Local Settings
+gestao_comissao/settings/develop.py
