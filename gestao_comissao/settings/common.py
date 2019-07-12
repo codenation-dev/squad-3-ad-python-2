@@ -20,10 +20,10 @@ DEFAULT_APPS = [
 ]
 
 PROJECT_APPS = [
+    'core',
     'sale',
     'seller',
-    'plan',
-    'core'
+    'plan'
 ]
 
 THIRD_PARTY_APPS = [
