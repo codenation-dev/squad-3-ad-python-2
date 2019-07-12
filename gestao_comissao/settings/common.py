@@ -23,7 +23,7 @@ PROJECT_APPS = [
     'sale',
     'seller',
     'plan',
-    'address'
+    'core'
 ]
 
 THIRD_PARTY_APPS = [
