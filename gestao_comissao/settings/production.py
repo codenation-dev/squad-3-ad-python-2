@@ -1,9 +1,11 @@
+from dj_database_url import parse
+
 from decouple import config
 
 ALLOWED_HOSTS = ['*']
 
 DATABASES = {
-    'default': config('DATABASE_URL')
+    'default': config('DATABASE_URL', cast=parse)
 }
 
 DEBUG = False
