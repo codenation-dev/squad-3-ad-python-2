@@ -14,14 +14,17 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Sale',
+            name='Address',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('month', models.IntegerField()),
+                ('street', models.CharField(max_length=200)),
+                ('neighborhood', models.CharField(max_length=100)),
+                ('number', models.CharField(max_length=10)),
+                ('zipcode', models.CharField(max_length=10)),
+                ('country', models.CharField(max_length=200)),
+                ('city', models.CharField(max_length=200)),
+                ('seller', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='seller.Seller')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Criado em')),
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Útima atualização')),
-                ('seller', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='seller.Seller')),
             ],
         ),
     ]
