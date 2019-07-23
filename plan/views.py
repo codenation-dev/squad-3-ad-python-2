@@ -1,16 +1,9 @@
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.viewsets import ModelViewSet
 
 from .serializer import PlanSerializer
 from .models import Plan
 
 
-class PlanRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
-	queryset = Plan.objects.all()
-	lookup_field = 'id'
-	serializer_class = PlanSerializer
-
-
-class PlanListCreateAPIView(ListCreateAPIView):
+class PlanViewSet(ModelViewSet):
 	queryset = Plan.objects.all()
 	serializer_class = PlanSerializer
