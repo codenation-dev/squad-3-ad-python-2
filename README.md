@@ -34,7 +34,7 @@ make run
 ````
 Your application is running at:  http://localhost:8000
 
-### Routes:
+### Routes
 
 ...
 
