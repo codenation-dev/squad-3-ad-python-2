@@ -1,1 +1,1 @@
-web: gunicorn gestao_comissao.wsgi
+web: gunicorn commi_sales.wsgi

@@ -105,4 +105,4 @@ venv.bak/
 .vscode
 
 # Project Local Settings
-gestao_comissao/settings/develop.py
+commi_sales/settings/develop.py

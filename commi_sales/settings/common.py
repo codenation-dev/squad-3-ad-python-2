@@ -20,7 +20,6 @@ DEFAULT_APPS = [
 ]
 
 PROJECT_APPS = [
-    'core',
     'sale',
     'seller',
     'plan'
@@ -42,7 +41,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'gestao_comissao.urls'
+ROOT_URLCONF = 'commi_sales.urls'
 
 TEMPLATES = [
     {
@@ -62,7 +61,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'gestao_comissao.wsgi.application'
+WSGI_APPLICATION = 'commi_sales.wsgi.application'
 
 
 # Password validation

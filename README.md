@@ -1,10 +1,44 @@
-# Gestão de comissões Televendas 
+# CommiSales
 
+#### Codenation - Python for Web 2
 
-## Objetivo
+## Project developed for
 
-O objetivo desse produto é de calcular a comissão que cada vendedor do sistema ao longo dos meses seguindo a regra de comissão selecionada na hora que o vendedor for cadastrado. 
+- Alexandre Frandulic Shimono
+- Arthur Henrique Della Fraga
+- Felipe Natividade
+- Matheus de Souza Lins
+- Sandro Wentz Forte
 
-## Contextualização
+### Requirements
 
-Uma empresa de televendas gostaria de armazenar e calcular a comissão dos seus vendedores ao longo do tempo de acordo com o plano de comissão que eles escolheram. Para isso eles precisam de um sistema que fará tal cálculo da comissão ao adicionar o valor mensal das vendas no sistema. A empresa também precisa saber se as vendas dos seus vendedores estão satisfatórias através do cálculo da média ponderada dos valores de vendas nos últimos meses, e caso não esteja eles deverão ser notificados através do email.
+- Virtualenv
+- Pip
+
+### Environment vars
+
+````.env
+ SECRET_KEY=you_secret_key
+````
+
+### Pre Run
+
+1 - Create a file ```.env``` in root and set the environment vars \
+2 - Create a virtual environment ```virtualenv venv``` \
+3 - Inside virtual environment, install the dependencies: ```make deps```
+
+### Running
+
+````python
+make run
+````
+Your application is running at:  http://localhost:8000
+
+### Routes
+
+...
+
+### Admin
+
+Login: ```admim``` \
+Password: ```admin```
