@@ -20,7 +20,7 @@ class SaleViewSet(ModelViewSet):
 def send_email(email):
 
     remetente = 'squad3python@gmail.com'
-    senha = 'pythonsquad3'
+    senha = ''
     destinatario = [email]
     assunto = 'Check Comission'
     msg = MIMEMultipart('alternative')
