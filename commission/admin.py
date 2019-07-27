@@ -1,4 +1,4 @@
 from django.contrib import admin
-from commission.models import Commission, Plan
+from commission.models import Plan
 
-admin.site.register([Commission, Plan])
+admin.site.register(Plan)

@@ -1,12 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
-from .serializer import CommissionSerializer, PlanSerializer
-from .models import Commission, Plan
-
-
-class CommissionViewSet(ModelViewSet):
-	queryset = Commission.objects.all()
-	serializer_class = CommissionSerializer
+from .serializer import PlanSerializer
+from .models import Plan
 
 
 class PlanViewSet(ModelViewSet):
