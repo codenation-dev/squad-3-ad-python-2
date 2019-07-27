@@ -6,4 +6,4 @@ from .models import Sale
 class SaleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sale
-        exclude = ('created_at', 'updated_at', )
+        exclude = ('created_at', 'updated_at',)

@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views import check_comission
+from .views import check_commission
 
 
 urlpatterns = [
-    path('check_comission/', check_comission, name='check_comission'),
+    path('check_commission/', check_commission, name='check_commission'),
 ]
