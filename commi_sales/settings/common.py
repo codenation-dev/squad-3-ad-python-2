@@ -22,7 +22,7 @@ DEFAULT_APPS = [
 PROJECT_APPS = [
     'sale',
     'seller',
-    'plan'
+    'commission'
 ]
 
 THIRD_PARTY_APPS = [
