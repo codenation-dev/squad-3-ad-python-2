@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Plan, Commission
+from .models import Plan
 
 
 class PlanSerializer(serializers.ModelSerializer):
@@ -8,8 +8,3 @@ class PlanSerializer(serializers.ModelSerializer):
         model = Plan
         exclude = ('created_at', 'updated_at',)
 
-
-class CommissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Commission
-        exclude = ('created_at', 'updated_at',)
