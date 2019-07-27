@@ -40,7 +40,7 @@ def send_email(email):
 
 
 @api_view(["POST"])
-def check_comission(request):
+def check_commission(request):
 
 	data = request.data
 	seller = data['seller']
