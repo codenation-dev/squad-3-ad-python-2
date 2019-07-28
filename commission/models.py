@@ -7,6 +7,7 @@ class Commission(models.Model):
 
     value = models.FloatField()
     month = models.IntegerField()
+    year = models.IntegerField()
     seller = models.ForeignKey(
         Seller,
         on_delete=models.CASCADE,
