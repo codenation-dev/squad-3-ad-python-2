@@ -27,11 +27,12 @@ class SaleViewSet(ModelViewSet):
 			return (seller_plan.lower_percentage / 100) * amount
 
 	@staticmethod
-	def create_seller_commission(seller_id, value, month):
+	def create_seller_commission(seller_id, value, month, year):
 		seller = Seller.objects.get(id=seller_id)
 		data = {
 			'value': value,
 			'month': month,
+			'year': year,
 			'seller': seller
 		}
 		obj, created = Commission.objects.get_or_create(**data)
@@ -41,7 +42,12 @@ class SaleViewSet(ModelViewSet):
 		serializer = self.get_serializer(data=request.data)
 		initial_data = serializer.initial_data
 		seller_commission = self.calculate_commission(initial_data)
-		commission = self.create_seller_commission(initial_data['seller'], seller_commission, initial_data['month'])
+		commission = self.create_seller_commission(
+			initial_data['seller'],
+			seller_commission,
+			initial_data['month'],
+			initial_data['year'],
+		)
 
 		serializer.is_valid(raise_exception=True)
 
