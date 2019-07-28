@@ -22,10 +22,12 @@ DEFAULT_APPS = [
 PROJECT_APPS = [
     'sale',
     'seller',
-    'commission'
+    'commission',
+    'plan'
 ]
 
 THIRD_PARTY_APPS = [
+    'rest_framework_swagger',
     'rest_framework'
 ]
 
@@ -48,7 +50,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, "templates")
+            os.path.join(BASE_DIR, "commi_sales", "templates")
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -113,3 +115,4 @@ STATICFILES_DIRS = (
 STATIC_ROOT = os.path.join(BASE_DIR, 'commi_sales', 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+

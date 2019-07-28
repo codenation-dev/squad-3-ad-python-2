@@ -1,20 +1,57 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from email.mime.text import MIMEText
+from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 
 from .serializer import SaleSerializer
 from .models import Sale
-from seller.models import *
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from plan.models import Plan
+from seller.models import Seller
+from commission.models import Commission
 
 
 class SaleViewSet(ModelViewSet):
 	queryset = Sale.objects.all()
 	serializer_class = SaleSerializer
+
+	@staticmethod
+	def calculate_commission(data):
+		seller_plan = Plan.objects.get(seller_plan=data['seller'])
+		amount = data['amount']
+		if amount >= seller_plan.min_value:
+			return (seller_plan.upper_percentage / 100) * amount
+		else:
+			return (seller_plan.lower_percentage / 100) * amount
+
+	@staticmethod
+	def create_seller_commission(seller_id, value, month):
+		seller = Seller.objects.get(id=seller_id)
+		data = {
+			'value': value,
+			'month': month,
+			'seller': seller
+		}
+		obj, created = Commission.objects.get_or_create(**data)
+		return obj.value
+
+	def create(self, request, *args, **kwargs):
+		serializer = self.get_serializer(data=request.data)
+		initial_data = serializer.initial_data
+		seller_commission = self.calculate_commission(initial_data)
+		commission = self.create_seller_commission(initial_data['seller'], seller_commission, initial_data['month'])
+
+		serializer.is_valid(raise_exception=True)
+
+		self.perform_create(serializer)  # save
+		headers = self.get_success_headers(serializer.data)
+		data = {
+			'id': serializer.data['seller'],
+			'commission': commission
+		}
+		return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 def send_email(email):
@@ -58,7 +95,7 @@ def check_commission(request):
 
 	if media < float(amount):
 		return Response({"should_notify": False})
-	else:	
+	else:
 		seller_email = Seller.objects.filter(pk=seller).values('email')
 		email = seller_email[0]['email']
 		send_email(email)
