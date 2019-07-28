@@ -22,12 +22,13 @@ DEFAULT_APPS = [
 PROJECT_APPS = [
     'sale',
     'seller',
-    'commission'
+    'commission',
+    'plan'
 ]
 
 THIRD_PARTY_APPS = [
-    'rest_framework',
-	'rest_framework_swagger'
+    'rest_framework_swagger',
+    'rest_framework'
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + PROJECT_APPS + THIRD_PARTY_APPS
@@ -48,7 +49,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, "templates")
+            os.path.join(BASE_DIR, "commi_sales", "templates")
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -114,4 +115,3 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-
