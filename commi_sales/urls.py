@@ -5,12 +5,13 @@ from django.urls import path
 from rest_framework import routers
 
 from plan.views import PlanViewSet
-from sale.views import SaleViewSet
+from sale.views import SaleViewSet, check_commission
 from seller.views import SellerViewSet
 
 
 urlpatterns = [
 	path('admin/', admin.site.urls),
+	path('check_commission/', check_commission, name='check_commission'),
 	path('', include_docs_urls(title='Commi Sales API', description='Documentation'))
 ]
 

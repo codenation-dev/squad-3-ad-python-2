@@ -1,8 +1,6 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
+from django.core.mail import send_mail
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from email.mime.text import MIMEText
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 
@@ -11,6 +9,7 @@ from .models import Sale
 from plan.models import Plan
 from seller.models import Seller
 from commission.models import Commission
+from commi_sales.settings.common import EMAIL_HOST_USER
 
 
 class SaleViewSet(ModelViewSet):
@@ -59,52 +58,35 @@ class SaleViewSet(ModelViewSet):
 		}
 		return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
+
 def send_email(email, mean):
+	subject = '[Commi Sales] Baixa da média de comissão de vendas'
+	from_email = EMAIL_HOST_USER
+	message = f"Cuidado! Sua média de comissão dos últimos 5 meses está abaixo do esperado! Média de R$: {mean}"
+	send_mail(message=message, subject=subject, from_email=from_email, recipient_list=[email])
 
-    from_email = 'squad3python@gmail.com'
-    password = 'gvpqohbfgkjcickw'
-    to = [email]
-    title = 'Check Comission'
-    msg = MIMEMultipart('alternative')
-    text = f"Sua média de comissão dos últimos 5 meses está abaixo do esperado! Média de R$: {mean}"
-    part1 = MIMEText(text, 'plain')
-
-    msg.attach(part1)
-
-    msg = '\r\n'.join(['From: %s' % from_email, 'To: %s' % to,\
-		'Subject: %s' % title, '', '%s' % text]).encode('UTF-8')
-
-    server = smtplib.SMTP('smtp.gmail.com:587')
-    server.starttls()
-    server.login(from_email, password)
-    server.sendmail(from_email, to, msg)
-    server.quit()
 
 @api_view(["POST"])
-def check_comission(request):
+def check_commission(request):
+    data = request.data
+    seller = data['seller']
+    amount = data['amount']
 
-	data = request.data
-	seller = data['seller']
-	amount = data['amount']
+    sales = Sale.objects.filter(seller__id=seller).order_by('-month')[:5]
+    sales = sorted(sales, key=lambda s: s.amount)
 
-	sales = Sale.objects.filter(seller__id=seller).order_by('-month')[:5]
-	sales = sorted(sales, key=lambda s: s.amount)
+    cont = 0
+    value_sum = 0
+    month_sum = 0
+    for s in sales:
+        cont += 1
+        month_sum += cont
+        value_sum = value_sum + cont * s.amount
+    mean = float((value_sum/month_sum)) * 0.9
 
-	cont = 0
-	value_sum = 0
-	month_sum  = 0
-	for s in sales:
-		cont += 1
-		month_sum += cont
-		value_sum = value_sum + cont * s.amount
-	mean = float((value_sum/month_sum)) * 0.9
+    if float(amount) > mean:
+        return Response({"should_notify": False})
 
-	if mean < float(amount):
-		return Response({"should_notify": False})
-	else:	
-		seller_email = Seller.objects.filter(pk=seller).values('email')
-		email = seller_email[0]['email']
-		send_email(email, mean)
-		return Response({"should_notify": True})
-
-	return Response({"resposta": "teste"})
+    seller_email = Seller.objects.get(pk=seller).email
+    send_email(seller_email, mean)
+    return Response({"should_notify": True})
