@@ -53,50 +53,52 @@ class SaleViewSet(ModelViewSet):
 		}
 		return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
+def send_email(email, mean):
 
-def send_email(email):
-
-    remetente = 'squad3python@gmail.com'
-    senha = ''
-    destinatario = [email]
-    assunto = 'Check Comission'
+    from_email = 'squad3python@gmail.com'
+    password = 'gvpqohbfgkjcickw'
+    to = [email]
+    title = 'Check Comission'
     msg = MIMEMultipart('alternative')
-    texto = "Sua média de comissão dos últimos 5 meses está abaixo do esperado!"
-    part1 = MIMEText(texto, 'plain')
+    text = f"Sua média de comissão dos últimos 5 meses está abaixo do esperado! Média de R$: {mean}"
+    part1 = MIMEText(text, 'plain')
 
     msg.attach(part1)
 
-    msg = '\r\n'.join(['From: %s' % remetente, 'To: %s' % destinatario,\
-		'Subject: %s' % assunto, '', '%s' % texto]).encode('UTF-8')
+    msg = '\r\n'.join(['From: %s' % from_email, 'To: %s' % to,\
+		'Subject: %s' % title, '', '%s' % text]).encode('UTF-8')
 
     server = smtplib.SMTP('smtp.gmail.com:587')
     server.starttls()
-    server.login(remetente, senha)
-    server.sendmail(remetente, destinatario, msg)
+    server.login(from_email, password)
+    server.sendmail(from_email, to, msg)
     server.quit()
 
-
 @api_view(["POST"])
-def check_commission(request):
+def check_comission(request):
 
 	data = request.data
 	seller = data['seller']
 	amount = data['amount']
 
-	sale = Sale.objects.filter(seller__id=seller).order_by('amount')[:5]
-	cont = 0
-	total = 0
-	soma = 0
-	for s in sale:
-		cont = cont + 1
-		soma = soma + cont
-		total = total + cont * s.amount
-	media = float((total/soma)) * 0.9
+	sales = Sale.objects.filter(seller__id=seller).order_by('-month')[:5]
+	sales = sorted(sales, key=lambda s: s.amount)
 
-	if media < float(amount):
+	cont = 0
+	value_sum = 0
+	month_sum  = 0
+	for s in sales:
+		cont += 1
+		month_sum += cont
+		value_sum = value_sum + cont * s.amount
+	mean = float((value_sum/month_sum)) * 0.9
+
+	if mean < float(amount):
 		return Response({"should_notify": False})
-	else:
+	else:	
 		seller_email = Seller.objects.filter(pk=seller).values('email')
 		email = seller_email[0]['email']
-		send_email(email)
+		send_email(email, mean)
 		return Response({"should_notify": True})
+
+	return Response({"resposta": "teste"})
