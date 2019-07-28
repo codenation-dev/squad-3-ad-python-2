@@ -1,22 +1,20 @@
 from django.db import models
 
-
-class Plan(models.Model):
-
-    min_value = models.FloatField()
-    lower_percentage = models.FloatField()
-    upper_percentage = models.FloatField()
-    created_at = models.DateTimeField('Criado em', auto_now_add=True)
-    updated_at = models.DateTimeField('Útima atualização', auto_now=True)
-
-    def __str__(self):
-        return f'{self.min_value}'
+from seller.models import Seller
 
 
 class Commission(models.Model):
-    commission = models.FloatField()
+
+    value = models.FloatField()
+    month = models.IntegerField()
+    seller = models.ForeignKey(
+        Seller,
+        on_delete=models.CASCADE,
+        blank=False,
+        related_name='commission_seller'
+    )
     created_at = models.DateTimeField('Criado em', auto_now_add=True)
     updated_at = models.DateTimeField('Útima atualização', auto_now=True)
 
     def __str__(self):
-        return f'{self.commission}'
+        return f'{self.value}'
