@@ -7,6 +7,7 @@ class Sale(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
     month = models.IntegerField()
+    year = models.IntegerField()
     created_at = models.DateTimeField('Criado em', auto_now_add=True)
     updated_at = models.DateTimeField('Útima atualização', auto_now=True)
 
