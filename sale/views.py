@@ -95,7 +95,7 @@ def check_commission(request):
 
 	if media < float(amount):
 		return Response({"should_notify": False})
-	else:	
+	else:
 		seller_email = Seller.objects.filter(pk=seller).values('email')
 		email = seller_email[0]['email']
 		send_email(email)
