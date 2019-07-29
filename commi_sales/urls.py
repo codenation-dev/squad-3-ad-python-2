@@ -6,7 +6,8 @@ from rest_framework import routers
 
 from plan.views import PlanViewSet
 from sale.views import SaleViewSet, check_commission
-from seller.views import SellerViewSet, SellerOrderedByComission
+from seller.views import SellerViewSet
+from commission.views import CommissionViewSet
 
 
 urlpatterns = [
@@ -20,5 +21,6 @@ router = routers.SimpleRouter()
 router.register(r'plans', PlanViewSet)
 router.register(r'sales', SaleViewSet)
 router.register(r'sellers', SellerViewSet)
+router.register(r'comission', CommissionViewSet)
 
 urlpatterns.extend(router.urls)
