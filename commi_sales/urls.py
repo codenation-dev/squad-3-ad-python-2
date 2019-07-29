@@ -6,12 +6,13 @@ from rest_framework import routers
 
 from plan.views import PlanViewSet
 from sale.views import SaleViewSet, check_commission
-from seller.views import SellerViewSet
+from seller.views import SellerViewSet, SellerOrderedByComission
 
 
 urlpatterns = [
 	path('admin/', admin.site.urls),
 	path('check_commission/', check_commission, name='check_commission'),
+	#path('seller/<int:year>/<int:month>/', SellerOrderedByComission.as_view(),name='ordered_sellers'),
 	path('', include_docs_urls(title='Commi Sales API', description='Documentation'))
 ]
 

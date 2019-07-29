@@ -1,8 +1,11 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
 
 from .serializer import SellerSerializer
 from .models import Seller
+from commission.serializer import CommissionSerializer
+from commission.models import Commission
 
 
 class SellerViewSet(ModelViewSet):
@@ -32,3 +35,19 @@ class SellerViewSet(ModelViewSet):
 			for d in data
 		]
 		return Response(response)
+
+
+class SellerOrderedByComission(ListAPIView):
+    	
+	lookup_url_kwarg = ['year','month']
+	serializer_class = CommissionSerializer
+
+	def get_queryset(self):		
+		year, month = self.kwargs.get(self.lookup_url_kwarg)
+		compensations = Comission.objects.filter(year=year).filter(month=month).order_by('value')
+		sellers = []
+		for compensation in compensations:
+			sellers.append(compensation.seller)
+
+		return sellers
+
