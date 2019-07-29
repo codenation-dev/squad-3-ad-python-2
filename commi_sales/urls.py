@@ -8,8 +8,9 @@ from plan.views import PlanViewSet
 from sale.views import SaleViewSet, check_commission
 from seller.views import SellerViewSet
 from commission.views import CommissionViewSet
+from rest_framework_swagger.views import get_swagger_view
 
-
+schema_view = get_swagger_view(title='Commi-Sales')
 urlpatterns = [
 	path('admin/', admin.site.urls),
 	path('check_commission/', check_commission, name='check_commission'),
