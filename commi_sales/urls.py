@@ -5,7 +5,7 @@ from django.urls import path
 from rest_framework import routers
 
 from plan.views import PlanViewSet
-from sale.views import SaleViewSet, check_commission
+from sale.views import SaleViewSet, CheckCommissionApiView
 from seller.views import SellerViewSet, ListSellersByCommissionAPIView
 
 
@@ -16,7 +16,7 @@ router.register(r'sellers', SellerViewSet)
 
 urlpatterns = [
 	path('admin/', admin.site.urls),
-	path('check_commission/', check_commission, name='check_commission'),
+	path('check_commission/', CheckCommissionApiView.as_view(), name='check_commission'),
 	path('', include_docs_urls(title='Commi Sales API', description='Documentation')),
 	path(
 		'list_by_commission/<int:commission_seller__month>/<int:commission_seller__year>',

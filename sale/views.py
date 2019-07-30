@@ -1,5 +1,5 @@
 from django.core.mail import send_mail
-from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
@@ -59,34 +59,34 @@ class SaleViewSet(ModelViewSet):
 		return Response(data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-def send_email(email, mean):
-	subject = '[Commi Sales] Baixa média de comissão de vendas'
-	from_email = EMAIL_HOST_USER
-	message = f"Cuidado! Sua média de comissão dos últimos 5 meses está abaixo do esperado! Média de R$: {mean}"
-	send_mail(message=message, subject=subject, from_email=from_email, recipient_list=[email])
+class CheckCommissionApiView(APIView):
 
+	def send_email(self, email, mean):
+		subject = '[Commi Sales] Baixa média de comissão de vendas'
+		from_email = EMAIL_HOST_USER
+		message = f"Cuidado! Sua média de comissão dos últimos 5 meses está abaixo do esperado! Média de R$: {mean}"
+		send_mail(message=message, subject=subject, from_email=from_email, recipient_list=[email])
 
-@api_view(["POST"])
-def check_commission(request):
-    data = request.data
-    seller = data['seller']
-    amount = data['amount']
+	def post(self, request):
+		data = request.data
+		seller = data['seller']
+		amount = data['amount']
 
-    sales = Sale.objects.filter(seller__id=seller).order_by('-month')[:5]
-    sales = sorted(sales, key=lambda s: s.amount)
+		sales = Sale.objects.filter(seller__id=seller).order_by('-month')[:5]
+		sales = sorted(sales, key=lambda s: s.amount)
 
-    cont = 0
-    value_sum = 0
-    month_sum = 0
-    for s in sales:
-        cont += 1
-        month_sum += cont
-        value_sum = value_sum + cont * s.amount
-    mean = float((value_sum/month_sum)) * 0.9
+		cont = 0
+		value_sum = 0
+		month_sum = 0
+		for s in sales:
+		    cont += 1
+		    month_sum += cont
+		    value_sum = value_sum + cont * s.amount
+		mean = float((value_sum/month_sum)) * 0.9
 
-    if float(amount) > mean:
-        return Response({"should_notify": False})
+		if float(amount) > mean:
+		    return Response({"should_notify": False})
 
-    seller_email = Seller.objects.get(pk=seller).email
-    send_email(seller_email, mean)
-    return Response({"should_notify": True})
+		seller_email = Seller.objects.get(pk=seller).email
+		self.send_email(seller_email, mean)
+		return Response({"should_notify": True})
