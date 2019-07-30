@@ -60,7 +60,7 @@ class SaleViewSet(ModelViewSet):
 
 
 def send_email(email, mean):
-	subject = '[Commi Sales] Baixa da média de comissão de vendas'
+	subject = '[Commi Sales] Baixa média de comissão de vendas'
 	from_email = EMAIL_HOST_USER
 	message = f"Cuidado! Sua média de comissão dos últimos 5 meses está abaixo do esperado! Média de R$: {mean}"
 	send_mail(message=message, subject=subject, from_email=from_email, recipient_list=[email])

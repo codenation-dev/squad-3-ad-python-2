@@ -19,6 +19,9 @@
 
 ````.env
  SECRET_KEY=you_secret_key
+ EMAIL_HOST_PW=gvpqohbfgkjcickw
+ EMAIL_HOST_USER='squad3python@gmail.com'
+
 ````
 
 ### Pre Run
