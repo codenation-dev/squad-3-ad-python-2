@@ -40,11 +40,10 @@ def get_ordered_by_comission(request, year, month):
 
     commissions = Commission.objects.filter(year=year).filter(month=month).order_by('-value')
     sellers = Seller.objects.all()
-    sellers_zero_commission = []
-    print(list(filter(lambda x: x.seller.pk == 1, commissions)))
-    for seller in sellers:
-        if seller in list(filter(lambda x: x.value == seller.pk, commissions)):
-            seller_list.append((seller,filter(lambda x: x.seller.pk = seller.pk, commissions)[0]))
+    
+    sellers_with_commission = list(map(lambda x:x.seller,commissions))
+    sellers_zero_commission = [seller for seller in sellers if seller not in sellers_with_commission]
+
     response = [
         {
             'name': Seller.objects.filter(id=commission.seller.pk)[0].name,
@@ -53,5 +52,15 @@ def get_ordered_by_comission(request, year, month):
         }
         for commission in commissions
     ]
+
+    response += [
+        {
+            'name': seller.name,
+            'id': str(seller.pk),
+            'commission': str(0),
+        }
+        for seller in sellers_zero_commission
+    ]
+
     return Response(response)
 

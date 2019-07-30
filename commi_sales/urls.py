@@ -12,7 +12,7 @@ from commission.views import CommissionViewSet
 urlpatterns = [
 	path('admin/', admin.site.urls),
 	path('check_commission/', check_commission, name='check_commission'),
-	path('seller/<int:year>/<int:month>/', get_ordered_by_comission,name='ordered_sellers'),
+	path('sellers/<int:year>/<int:month>/', get_ordered_by_comission,name='ordered_sellers'),
 	path('', include_docs_urls(title='Commi Sales API', description='Documentation'))
 ]
 
