@@ -35,17 +35,23 @@ class SellerViewSet(ModelViewSet):
         return Response(response)
 
 @api_view(["GET"])
-def get_ordered_by_comission(self, request, *args, **kwargs):
-    serializer = self.get_serializer(self.queryset, many=True)
-    data = serializer.data
+def get_ordered_by_comission(request, year, month):
+    #serializer = self.get_serializer(self.queryset, many=True)
 
+    commissions = Commission.objects.filter(year=year).filter(month=month).order_by('-value')
+    sellers = Seller.objects.all()
+    sellers_zero_commission = []
+    print(list(filter(lambda x: x.seller.pk == 1, commissions)))
+    for seller in sellers:
+        if seller in list(filter(lambda x: x.value == seller.pk, commissions)):
+            seller_list.append((seller,filter(lambda x: x.seller.pk = seller.pk, commissions)[0]))
     response = [
         {
-            'name': d['name'],
-            'id': d['id'],
-            'commissions': data['commission_seller'],
+            'name': Seller.objects.filter(id=commission.seller.pk)[0].name,
+            'id': str(Seller.objects.filter(id=commission.seller.pk)[0].pk),
+            'commission': str(commission.value),
         }
-        for d in data
+        for commission in commissions
     ]
     return Response(response)
 
