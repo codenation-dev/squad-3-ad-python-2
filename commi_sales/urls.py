@@ -6,18 +6,23 @@ from rest_framework import routers
 
 from plan.views import PlanViewSet
 from sale.views import SaleViewSet, check_commission
-from seller.views import SellerViewSet
+from seller.views import SellerViewSet, ListSellersByCommissionAPIView
 
-
-urlpatterns = [
-	path('admin/', admin.site.urls),
-	path('check_commission/', check_commission, name='check_commission'),
-	path('', include_docs_urls(title='Commi Sales API', description='Documentation'))
-]
 
 router = routers.SimpleRouter()
 router.register(r'plans', PlanViewSet)
 router.register(r'sales', SaleViewSet)
 router.register(r'sellers', SellerViewSet)
+
+urlpatterns = [
+	path('admin/', admin.site.urls),
+	path('check_commission/', check_commission, name='check_commission'),
+	path('', include_docs_urls(title='Commi Sales API', description='Documentation')),
+	path(
+		'list_by_commission/<int:commission_seller__month>/<int:commission_seller__year>',
+		ListSellersByCommissionAPIView.as_view(),
+		name='list_by_commission'
+	)
+]
 
 urlpatterns.extend(router.urls)
