@@ -49,14 +49,14 @@ class SaleViewSet(ModelViewSet):
         )
 
         serializer.is_valid(raise_exception=True)
-
         self.perform_create(serializer)  # save
-        headers = self.get_success_headers(serializer.data)
+
         data = {
             'id': serializer.data['seller'],
             'commission': commission
         }
-        return Response(data, status=status.HTTP_201_CREATED, headers=headers)
+
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 class CheckCommissionApiView(APIView):
@@ -78,15 +78,20 @@ class CheckCommissionApiView(APIView):
         cont = 0
         value_sum = 0
         month_sum = 0
+        mean = 0
+
         for s in sales:
             cont += 1
             month_sum += cont
             value_sum = value_sum + cont * s.amount
-        mean = float((value_sum/month_sum)) * 0.9
+
+        if sales:
+            mean = float((value_sum/month_sum)) * 0.9
 
         if float(amount) > mean:
             return Response({"should_notify": False})
 
         seller_email = Seller.objects.get(pk=seller).email
         self.send_email(seller_email, mean)
+
         return Response({"should_notify": True})
