@@ -4,11 +4,10 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from django.db.models import Q
-from rest_framework.decorators import api_view
 
 from .serializer import SellerSerializer
 from .models import Seller
-from commission.models import Commission
+
 
 class SellerViewSet(ModelViewSet):
     queryset = Seller.objects.all()
@@ -43,10 +42,11 @@ class SellerViewSet(ModelViewSet):
 
 
 class ListSellersByCommissionAPIView(ListAPIView):
+    queryset = Seller.objects.all()
     serializer_class = SellerSerializer
 
     def list(self, request, *args, **kwargs):
-        data = self.get_queryset(**kwargs)
+        data = self.filter_sellers(**kwargs)
         response = [
             {
                 'name': d['name'],
@@ -58,16 +58,24 @@ class ListSellersByCommissionAPIView(ListAPIView):
         return Response(response)
 
     @staticmethod
-    def get_sum_commission_seller(commissions, month, year):
-        commissions_filtered = [
-            commission for commission in commissions \
-            if commission['month'] == month and commission['year'] == year
-        ]
-        if commissions_filtered:
-            return sum(commission['value'] for commission in commissions_filtered)
-        return commissions_filtered
+    def get_sum_commission_seller(commissions, year, month):
+        commissions_filtered = filter(
+            lambda commission: commission['month'] == month and commission['year'] == year, commissions
+        )
+        return sum(commission['value'] for commission in commissions_filtered)
 
-    def get_queryset(self, **kwargs):
+    def response_sellers(self, sellers, month, year):
+        response = []
+        for seller in sellers:
+            sum_commission_sellers = self.get_sum_commission_seller(seller['commission_seller'], month, year)
+            response.append({
+                'name': seller['name'],
+                'id': seller['id'],
+                'max_commission': sum_commission_sellers,
+            })
+        return response
+
+    def filter_sellers(self, **kwargs):
         year = kwargs.get('year')
         month = kwargs.get('month')
 
@@ -78,21 +86,8 @@ class ListSellersByCommissionAPIView(ListAPIView):
         serializer_with_commissions = self.get_serializer(sellers_with_commissions, many=True)
         serializer_without_commissions = self.get_serializer(sellers_without_commissions, many=True)
 
-        response = []
-        for seller in serializer_with_commissions.data:
-            response.append({
-                'name': seller['name'],
-                'id': seller['id'],
-                'max_commission': self.get_sum_commission_seller(seller['commission_seller'], month, year),
-            })
-
-        for seller in serializer_without_commissions.data:
-            response.append({
-                'name': seller['name'],
-                'id': seller['id'],
-                'max_commission': 0
-            })
+        response = self.response_sellers(serializer_with_commissions.data, year, month)
+        response.extend(self.response_sellers(serializer_without_commissions.data, year, month))
 
         unique_response = {v['id']: v for v in response}.values()
         return sorted(unique_response, key=itemgetter('max_commission'), reverse=True)
-
