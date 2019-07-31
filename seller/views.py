@@ -3,6 +3,7 @@ from operator import itemgetter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
+from django.db.models import Q
 from rest_framework.decorators import api_view
 
 from .serializer import SellerSerializer
@@ -45,7 +46,7 @@ class ListSellersByCommissionAPIView(ListAPIView):
     serializer_class = SellerSerializer
 
     def list(self, request, *args, **kwargs):
-        data = self.filter_queryset(self.get_queryset(**kwargs))
+        data = self.get_queryset(**kwargs)
         response = [
             {
                 'name': d['name'],
@@ -57,7 +58,7 @@ class ListSellersByCommissionAPIView(ListAPIView):
         return Response(response)
 
     @staticmethod
-    def get_max_commission_seller(commissions, month, year):
+    def get_sum_commission_seller(commissions, month, year):
         commissions_filtered = [
             commission for commission in commissions \
             if commission['month'] == month and commission['year'] == year
@@ -67,51 +68,31 @@ class ListSellersByCommissionAPIView(ListAPIView):
         return commissions_filtered
 
     def get_queryset(self, **kwargs):
-        sellers_with_commissions = Seller.objects.filter(**kwargs)
-        serializer = self.get_serializer(sellers_with_commissions, many=True)
+        year = kwargs.get('year')
+        month = kwargs.get('month')
+
+        sellers_with_commissions = Seller.objects.filter(commission_seller__year=year, commission_seller__month=month)
+        sellers_without_commissions = Seller.objects.filter(
+            ~Q(commission_seller__year=year, commission_seller__month=month)
+        )
+        serializer_with_commissions = self.get_serializer(sellers_with_commissions, many=True)
+        serializer_without_commissions = self.get_serializer(sellers_without_commissions, many=True)
+
         response = []
-        for seller in serializer.data:
+        for seller in serializer_with_commissions.data:
             response.append({
                 'name': seller['name'],
                 'id': seller['id'],
-                'max_commission': self.get_max_commission_seller(
-                    seller['commission_seller'],
-                    kwargs.get('commission_seller__month'),
-                    kwargs.get('commission_seller__year'),
-                ),
+                'max_commission': self.get_sum_commission_seller(seller['commission_seller'], month, year),
             })
+
+        for seller in serializer_without_commissions.data:
+            response.append({
+                'name': seller['name'],
+                'id': seller['id'],
+                'max_commission': 0
+            })
+
         unique_response = {v['id']: v for v in response}.values()
         return sorted(unique_response, key=itemgetter('max_commission'), reverse=True)
 
-
-@api_view(["GET"])
-def get_ordered_by_comission(request, year, month):
-    #serializer = self.get_serializer(self.queryset, many=True)
-
-    commissions = Commission.objects.filter(year=year).filter(month=month).order_by('-value')
-    sellers = Seller.objects.all()
-    
-    sellers_with_commission = list(map(lambda x:x.seller,commissions))
-    sellers_zero_commission = [seller for seller in sellers if seller not in sellers_with_commission]
-
-    response = [
-        {
-            'name': Seller.objects.filter(id=commission.seller.pk)[0].name,
-            'id': str(Seller.objects.filter(id=commission.seller.pk)[0].pk),
-            'commission': str(commission.value),
-        }
-        for commission in commissions
-    ]
-
-    response += [
-        {
-            'name': seller.name,
-            'id': str(seller.pk),
-            'commission': str(0),
-        }
-        for seller in sellers_zero_commission
-    ]
-
-    return Response(response)
-
-    
