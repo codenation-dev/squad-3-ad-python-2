@@ -19,7 +19,7 @@ class SaleViewSet(ModelViewSet):
     @staticmethod
     def calculate_commission(data):
         seller_plan = Plan.objects.get(seller_plan=data['seller'])
-        amount = data['amount']
+        amount = float(data['amount'])
         if amount >= seller_plan.min_value:
             return (seller_plan.upper_percentage / 100) * amount
         else:
